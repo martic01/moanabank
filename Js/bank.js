@@ -39,6 +39,17 @@ Account.prototype.addTransaction = function () {
 
 };
 
+function calculateAge(birthDate) {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+        age--;
+    }
+    return age;
+}
 
 const bank = new Bank()
 
@@ -63,7 +74,11 @@ $(document).ready(function () {
         if (username && emailaddress && dateofbirth && nin && password &&
             containsLettersAndNumbers(password) && !gmailerror(emailaddress)) {
 
-            // Validate lengths
+            const age = calculateAge(dateofbirth);
+            if (age < 16) {
+                alerting(".alerted", ".errormes", ".erroricon", "👀", "You must be at least 16 years old to create an account.");
+                return;
+            }
             if (lenerror(password, 5, 8)) {
                 alerting(".alerted", ".errormes", ".erroricon", "👀", "Password must be 5-8 characters");
                 return;
@@ -109,7 +124,6 @@ $(document).ready(function () {
                 return;
             }
 
-            // If all validations pass, create account
             const newAccount = new Account(
                 username,
                 emailaddress,
@@ -139,6 +153,50 @@ $(document).ready(function () {
     });
 
     $('#loginforms').submit(function () {
-        
+        const loginemailaddress = $('#loginemailaddress').val().trim();
+        const loginPassword = $('#loginpassword').val().trim();
+
+        // Check for empty fields
+        if (!loginemailaddress || !loginPassword) {
+            alerting(".alerted", ".errormes", ".erroricon", "⚠", "Please fill in all fields.");
+            return;
+        }
+
+        let foundAccount = null;
+        let accountId = null;
+
+        if (!gmailerror(loginemailaddress)) {
+            // Loop through all accounts to find matching email
+            for (const id in bank.Accounts) {
+                const account = bank.findAccount(id); // Using your existing method
+                if (account && account.emailAddress.toLowerCase() === loginemailaddress.toLowerCase()) {
+                    foundAccount = account;
+                    accountId = id; // Store the account ID
+                    break;
+                }
+            }
+
+
+            if (!foundAccount) {
+                alerting(".alerted", ".errormes", ".erroricon", "⭕", "Account Does not Exist");
+                return;
+            }
+            if (foundAccount.password !== loginPassword) {
+                alerting(".alerted", ".errormes", ".erroricon", "❌", "Incorrect password.");
+                return;
+            }
+
+            alerting(".alerted", ".errormes", ".erroricon", "👍", "Login successful!");
+            setTimeout(() => {
+                loadpage()
+            }, 1000);
+        }
+        // console.log("Login successful. Account:", {
+        //     id: accountId,          // The account ID (key in bank.Accounts)
+        //     ...foundAccount          // All other account properties
+        // });
+
+        // Successful login
+
     });
 });

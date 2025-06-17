@@ -52,10 +52,6 @@ $(document).ready(function () {
         $(".profile-info").hide()
         $(".profile").removeClass('half')
     })
-    $("#login").click(function () {
-        $(".mybankpage").show()
-        $(".accountpage").hide()
-    })
 
     $(".logout").click(function () {
         $(".mybankpage").hide()
@@ -89,9 +85,7 @@ $(document).ready(function () {
         $(".done-icon").hide()
     })
 
-    $(".login").click(function () {
-        loadpage()
-    })
+
 
     $("#showSignup").click(function () {
         $("#signupForm").show()
