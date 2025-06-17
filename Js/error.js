@@ -31,7 +31,7 @@ function gmailerror(email) {
     }
     return true
 }
-
+let iserror = true;
 $(document).ready(function () {
     $(".password").on("input", function () {
         const password = $(this).val().trim();
@@ -61,6 +61,8 @@ $(document).ready(function () {
         }
     });
 
+
+
     $("form").submit(function (e) {
         e.preventDefault();
         const password = $(this).find('.password').val().trim();
@@ -73,6 +75,9 @@ $(document).ready(function () {
         }
         if (gmailerror(email)) {
             alerting(".alerted", ".errormes", ".erroricon", "👀", "Email unaccepted | Email must contain @gmail.com");
+        }
+        if (!containsLettersAndNumbers(password) || lenerror(password, 5, 8) || gmailerror(email)) {
+            iserror = true;
         }
     });
 });

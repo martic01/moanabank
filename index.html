@@ -50,7 +50,7 @@
                         <label>Name</label>
                     </div>
                     <div class="input-group">
-                        <input type="email"  class="email" id="emailaddress" placeholder=" " />
+                        <input type="email" class="email" id="emailaddress" placeholder=" " />
                         <label>Email</label>
                     </div>
                     <div class="input-group">
@@ -101,59 +101,63 @@
                             </div>
                         </div>
                     </div>
-                     <p class="warn">Password 5 to 8 characters, Alphanumeric</p>
+                    <p class="warn">Password 5 to 8 characters, Alphanumeric</p>
                     <button type="submit" class="login">Login</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <section class="mybankpage hide">
+    <section class="mybankpage hide out">
         <div class="app">
             <div class="header">
                 <div class="user-info">
                     <div>
-                        <strong>Hello Alexar</strong><br />
+                        <strong class="name">Hello Alexar</strong><br />
                         Welcome Back!
                     </div>
                 </div>
                 <div class="opts cover">
                     <p class="opt">:</p>
-                    <div class="log">
+                    <div class="log out">
                         <h4 class="logout">Logout</h4> <br />
                         <h4 class="profile"> Profile</h4>
-                        <div class="profile-info hide myprofile">
+                        <div class="profile-info hide myprofile out">
                             <div class="info-row">
                                 <label>Name:</label>
-                                <input type="text" value="Matthew Bakery" readonly />
+                                <input class="name" type="text" value="Matthew Bakery" readonly />
                                 <i class="fas fa-pen edit-icon" title="Edit"></i>
                                 <i class="fas fa-check done-icon" title="Done"></i>
                             </div>
                             <div class="info-row">
                                 <label>Date of Birth:</label>
-                                <input type="text" value="30/13/2056" readonly />
+                                <input class="birth" type="" readonly />
                                 <i class="fas fa-pen edit-icon" title="Edit"></i>
                                 <i class="fas fa-check done-icon" title="Done"></i>
                             </div>
                             <div class="info-row">
-                                <label>Address:</label>
-                                <input type="text" value="45, Kenny Street, Ikeja, Lagos" readonly />
+                                <label>Email</label>
+                                <input class="emailed" type="text" value="" readonly />
                                 <i class="fas fa-pen edit-icon" title="Edit"></i>
                                 <i class="fas fa-check done-icon" title="Done"></i>
+                            </div>
+                            <div class="info-row">
+                                <label>Account Number:</label>
+                                <input class="accountnum dim" type="" readonly />
                             </div>
                             <div class="info-row">
                                 <label>NIN:</label>
-                                <input class="dim" type="text" readonly value="12345678901">
+                                <input class="dim nin" type="text" readonly value="12345678901">
                             </div>
                             <div class="info-row">
                                 <label>BVN:</label>
-                                <input class="dim" type="text" readonly value="22110033445">
+                                <input class="dim bvn" type="text" readonly value="22110033445">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="casf hide">
+            <div class="casf hide out">
                 <div class="myprofile cashflow">
                     <div class="cancel close">
                         X
@@ -194,20 +198,20 @@
             </div>
             <div class="wallet-card">
                 <div>Available Balance</div>
-                 <div class="input-group ban flex pass">
+                <div class="input-group ban flex pass">
                     <p class="currency">$</p>
-                        <input type="text" class="balance" readonly value="700000000.00"  />
-                        <div class="eye beye">
-                            <div class="eye-icon">
-                                <div class="eyelid"></div>
-                                <div class="eye-ball">
-                                    <div class="pubdy">
-                                        <div class="pupil"></div>
-                                    </div>
+                    <input type="text" class="balance" readonly value="700000000.00" />
+                    <div class="eye beye">
+                        <div class="eye-icon">
+                            <div class="eyelid"></div>
+                            <div class="eye-ball">
+                                <div class="pubdy">
+                                    <div class="pupil"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 <div class="wallet-actions">
                     <div class="wid monbtn">💰<br />Withdraw</div>
                     <div class="dep monbtn">💰<br />Deposite</div>
@@ -282,7 +286,7 @@
                 </div>
             </div>
 
-            <div class="recent-activity history cover">
+            <div class="recent-activity history cover out">
                 <h3>Recent Activity</h3>
                 <div class="trans">
                     <div class="activity-item">

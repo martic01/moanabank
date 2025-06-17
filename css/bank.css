@@ -702,7 +702,7 @@ form button:hover {
 }
 
 .info-row input {
-    padding: 10px;
+    padding: 7px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 15px;
@@ -943,11 +943,11 @@ form button:hover {
 /* Trust badge */
 .trust-badge {
     position: absolute;
-    bottom: -30px;
+    bottom: 27vmin;
     width: 100%;
     text-align: center;
-    font-size: 11px;
-    color: #6b7280;
+    font-size: 2.3vmin;
+    color: #63ecec;
 }
 
 /* Animations */

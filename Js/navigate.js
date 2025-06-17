@@ -19,6 +19,7 @@ $(document).ready(function () {
     })
 
     $(".monbtn").click(function () {
+        const account = bank.findAccount(accountId)
         const index = $('.monbtn').index(this)
         const clickedOn = $(this)
         const moneyClass = ['Withdraw', 'Deposit', 'Request', 'Transfer', 'Transfer', 'Deposit']
@@ -33,6 +34,11 @@ $(document).ready(function () {
 
                 $(".typejs").text(item)
                 $("#amount").addClass(`.${item.toLowerCase()}`)
+                if (item === moneyClass[0] || item === moneyClass[1]) {
+                    $(`#${account.id}.accountno`).val(account.accountnumber)
+                } else {
+                    $(`#${account.id}.accountno`).val('')
+                }
                 $("#amount").prop('placeholder', `amount to ${item}`)
                 clickedOn.addClass('acting')
             }
@@ -54,8 +60,10 @@ $(document).ready(function () {
     })
 
     $(".logout").click(function () {
-        $(".mybankpage").hide()
         $(".accountpage").show()
+        $('.monbtn').removeClass('acting')
+        $(".profile").removeClass('half')
+        $(".out").hide()
     })
 
     $(".profile").click(function () {
@@ -106,32 +114,32 @@ $(document).ready(function () {
 
 
         const currentType = inputOf.prop('type')
-        inputOf.prop('type', currentType === 'password' ? 'text' : 'password') 
+        inputOf.prop('type', currentType === 'password' ? 'text' : 'password')
 
     })
-    $('.beye').click(function() {
-    const $balanceInput = $(this).siblings('.balance');
-    const $eyelid = $(this).find('.eyelid');
-    const isOpening = !$eyelid.hasClass('opendeye');
-    
-    $eyelid.toggleClass('opendeye');
+    $('.beye').click(function () {
+        const $balanceInput = $(this).siblings('.balance');
+        const $eyelid = $(this).find('.eyelid');
+        const isOpening = !$eyelid.hasClass('opendeye');
 
-    if (isOpening) {
-        // Opening eye - show formatted balance with 2 decimals
-        const numericValue = parseFloat($balanceInput.data('original-value')) || parseFloat($balanceInput.val().replace(/,/g, ''));
-        $balanceInput.val(parseFloat(numericValue.toFixed(2)).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }));
-    } else {
-        // Closing eye - store numeric value and show asterisks
-        const currentValue = $balanceInput.val();
-        $balanceInput.data('original-value', 
-            parseFloat(currentValue.replace(/,/g, '')) || parseFloat($balanceInput.val())
-        );
-        $balanceInput.val('*'.repeat(10));
-    }
-});
+        $eyelid.toggleClass('opendeye');
+
+        if (isOpening) {
+            // Opening eye - show formatted balance with 2 decimals
+            const numericValue = parseFloat($balanceInput.data('original-value')) || parseFloat($balanceInput.val().replace(/,/g, ''));
+            $balanceInput.val(parseFloat(numericValue.toFixed(2)).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }));
+        } else {
+            // Closing eye - store numeric value and show asterisks
+            const currentValue = $balanceInput.val();
+            $balanceInput.data('original-value',
+                parseFloat(currentValue.replace(/,/g, '')) || parseFloat($balanceInput.val())
+            );
+            $balanceInput.val('*'.repeat(10));
+        }
+    });
 
     $("form").submit(function (e) {
         e.preventDefault()
