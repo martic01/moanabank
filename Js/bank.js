@@ -57,9 +57,12 @@ function calculateAge(birthDate) {
     return age;
 }
 
+
 const bank = new Bank()
+
+
 const testAccounts = [
-    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "alice1", 12000, 2000000001, "33445566778"),
+    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 400000, 2000000001, "33445566778"),
     new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, 2000000002, "33445566778") // BVN will auto-generate
 ];
 
@@ -154,51 +157,186 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
         $('#showLogin').trigger('click');
     }
 }
-function showAccount(accountId) {
-    const account = bank.findAccount(accountId);
 
+function bindId(accountId) {
+    const account = bank.findAccount(accountId);
+    $('.balance').attr('id', account.id);
+    $('.name').attr('id', account.id);
+    $('.birth').attr('id', account.id)
+    $('.emailed').attr('id', account.id)
+    $('.accountnum, .accountno').attr('id', account.id)
+    $('.nin').attr('id', account.id)
+    $('.bvn').attr('id', account.id)
+    $('.profile').attr('id', account.id);
+    $('.logout').attr('id', account.id);
+    $('.beye').attr('id', account.id);
+    $('.bankopt').attr('id', account.id);
+    $('.btnsmon').attr('id', account.id);
+    $('.amount').attr('id', account.id);
+    $('.history').attr('id', account.id);
+    $('.typejs').attr('id', account.id);
+}
+
+
+function showAccount(accountId) {
+    bindId(accountId);
+
+    const account = bank.findAccount(accountId);
     if (!account) {
-        console.error("Account not found");
         return;
     }
 
+    $(`#${account.id}.balance`)
+        .val(
+            parseFloat(account.balance)
+                .toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })
+        );
 
- 
-  $('.balance')
-    .attr('id', account.id)
-    .val(
-        parseFloat(account.balance)
-            .toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            })
-    );
-
-
-    $('.name').attr('id', account.id);
-    $('.name').each(function () {
-        if ($(this).is('input, textarea, select')) {
+    $(`#${account.id}.name`).each(function () {
+        if ($(this).is(`input, textarea, select`)) {
             $(this).val(account.userName);
         } else {
             $(this).text(`Hello ${account.userName}`);
         }
     });
-    $('.birth').attr('id', account.id).val(account.dateOfBirth);
-    $('.emailed').attr('id', account.id).val(account.emailAddress);
-    $('.accountnum, .accountno').attr('id', account.id).val(account.accountnumber);
-    $('.nin').attr('id', account.id).val(account.NIN);
-    $('.bvn').attr('id', account.id).val(account.BVN);
-    $('.profile').attr('id', account.id);
-    $('.logout').attr('id', account.id);
-    $('.eye').attr('id', account.id);
-    loadpage()
+    $(`#${account.id}.birth`).val(account.dateOfBirth);
+    $(`#${account.id}.emailed`).val(account.emailAddress);
+    $(`#${account.id}.accountnum, #${account.id}.accountno`).val(account.accountnumber);
+    $(`#${account.id}.nin`).val(account.NIN);
+    $(`#${account.id}.bvn`).val(account.BVN);
+
+    attachEventListeners()
+}
+
+function numericAmounts(amount) {
+    let numericAmount;
+    if (typeof amount === 'string') {
+        numericAmount = Number(amount.split(',').join(''));
+    } else {
+        numericAmount = Number(amount);
+    }
+    return numericAmount
+}
+
+function validateAmount(accountId, amount) {
+    let numericAmount = numericAmounts(amount)
+    // Validate the amount
+    if (isNaN(numericAmount)) {
+        alerting(".alerted", ".errormes", ".erroricon", "👀", "Please enter a valid amount.");
+        return;
+    }
+
+    const account = bank.findAccount(accountId);
+    const balance = Number(account.balance);
+
+    if (numericAmount > balance) {
+        alerting(".alerted", ".errormes", ".erroricon", "🙄", "Insufficient funds.");
+        return;
+    } else if (numericAmount <= 200) {
+        alerting(".alerted", ".errormes", ".erroricon", "🤨", "Amount must be greater than $200.");
+        return;
+    } else if (numericAmount > 300000) {
+        alerting(".alerted", ".errormes", ".erroricon", "🤨", "Amount must be less than $300,000.");
+        return;
+    }
+
+    return true
 
 }
 
+function htmltransaction(info1, action, actionclass, sign, amount) {
+    const transact = `
+        <div class="activity-item">
+            <div class="activity-left">
+                <div>
+                    <div>${info1}</div>
+                    <small>${action}</small>
+                </div>
+            </div>
+            <div class="${actionclass}">${sign} $${amount.toLocaleString()}</div>
+        </div>
+     `
+    return transact
+}
+
+function withdraw(accountId, amount) {
+    validateAmount(accountId, amount)
+    let numericAmount = numericAmounts(amount)
+    const account = bank.findAccount(accountId);
+    const balance = Number(account.balance);
+
+    if (validateAmount(accountId, amount)) {
+        const newBalance = balance - numericAmount;
+        account.balance = newBalance;
+
+        account.transactions.push(
+            htmltransaction(account.userName, 'Debit', 'red', '-', numericAmount)
+        );
+
+        showAccount(accountId);
+        loadpage(300, 10);
+        alerting(".alerted", ".errormes", ".erroricon", "✅",
+            `Withdrawal of $${numericAmount.toLocaleString()} successful!`);
+    }
+}
+
+function deposit(accountId, amount) {
+    validateAmount(accountId, amount)
+    let numericAmount = numericAmounts(amount)
+    const account = bank.findAccount(accountId);
+    const balance = Number(account.balance);
+
+    if (validateAmount(accountId, amount)) {
+        const newBalance = balance + numericAmount;
+        account.balance = newBalance;
+
+        account.transactions.push(
+            htmltransaction(account.userName, 'Credit', 'green', '+', numericAmount)
+        );
+        showAccount(accountId);
+        loadpage(300, 10);
+        alerting(".alerted", ".errormes", ".erroricon", "✅", `Deposite of $${numericAmount.toLocaleString()} successful!`);
+
+    }
+}
+function displayTransactions(accountId) {
+    const account = bank.findAccount(accountId)
+    account.transactions.forEach(function (trans) {
+        
+    })
+    
+}
+function attachEventListeners() {
+    const account = bank.findAccount(accountId);
+
+    $(`#${account.id}.btnsmon`).off('click').on('click', function () {
+        const state = $(`#${account.id}.typejs`).text().trim();
+        let amountInput = $(`#${account.id}.amount`).val().trim();
+
+        // Remove commas if present
+        if (amountInput.includes(',')) {
+            amountInput = amountInput.split(',').join('');
+        }
+
+        const numericAmount = Number(amountInput);
+
+        if (state === 'Withdraw') {
+            withdraw(account.id, numericAmount);
+        } else if (state === 'Deposit') {
+            deposit(account.id, numericAmount);
+        }
+
+        // Clear input
+        $(`#${account.id}.amount`).val('');
+    });
+}
 testAccounts.forEach(account => {
     bank.AddAcount(account);
 });
- let accountId = null;
+let accountId = null;
 $(document).ready(function () {
 
     function displayAccount() {
@@ -212,7 +350,7 @@ $(document).ready(function () {
         }
 
         let foundAccount = null;
-       
+
 
         if (!gmailerror(loginemailaddress)) {
             // Loop through all accounts to find matching email
@@ -237,6 +375,7 @@ $(document).ready(function () {
 
             alerting(".alerted", ".errormes", ".erroricon", "👍", "Login successful!");
             setTimeout(() => {
+                loadpage(7000, 2000)
                 showAccount(accountId);
             }, 1000);
         }

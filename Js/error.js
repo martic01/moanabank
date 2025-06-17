@@ -21,7 +21,7 @@ function alerting(className, errorSpace, erroricon, icon, message) {
     $(className).show();
     timeouted = setTimeout(function () {
         $(className).fadeOut();
-    }, 8000);
+    },3000);
 }
 function gmailerror(email) {
     const emailEnd = email.slice(-10)

@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <section class="alert-section hide alerted">
+    <section class="alert-section hide alerted out">
         <div class="alert">
             <div class="alert-content">
                 <h2 class="erroricon">❌</h2>
@@ -174,7 +174,7 @@
                     <p class="type typejs">Transfer</p>
                     <div class="info-row">
                         <label>Bank Name:</label>
-                        <select name="Bankopt" id="Bankopt">
+                        <select name="Bankopt"  class="bankopt">
                             <option value="1">Fɭo₩Ca$h Banking App</option>
                             <option value="2">Opay</option>
                             <option value="3">Access Bank</option>
@@ -184,14 +184,14 @@
                     </div>
                     <div class="info-row">
                         <label>Amount:</label>
-                        <input id="amount" type="text" />
+                        <input class="amount" type="number" />
                     </div>
                     <div class="info-row">
                         <label>Account No:</label>
                         <input type="text" class="accountno" value="12347891098" placeholder="account number" />
                     </div>
                     <button class="info-row btn">
-                        <input class="dim btns" type="text" value="Done" readonly>
+                        <input class="dim btnsmon btns" type="text" value="Done" readonly>
                     </button>
 
                 </div>
@@ -295,7 +295,7 @@
                                 <div>Alex Maccullam</div><small>Send Money</small>
                             </div>
                         </div>
-                        <div class="amount negative">- $66.02</div>
+                        <div class="negative">- $66.02</div>
                     </div>
                     <div class="activity-item">
                         <div class="activity-left">
@@ -303,7 +303,7 @@
                                 <div>Mac Dinner</div><small>Cashout</small>
                             </div>
                         </div>
-                        <div class="amount negative">- $120.02</div>
+                        <div class="negative">- $120.02</div>
                     </div>
                     <div class="activity-item">
                         <div class="activity-left">
@@ -311,32 +311,9 @@
                                 <div>Mac Dinner</div><small>Cashout</small>
                             </div>
                         </div>
-                        <div class="amount negative">- $120.02</div>
+                        <div class="negative">- $120.02</div>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-left">
-                            <div>
-                                <div>Mac Dinner</div><small>Cashout</small>
-                            </div>
-                        </div>
-                        <div class="amount negative">- $120.02</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-left">
-                            <div>
-                                <div>Mac Dinner</div><small>Cashout</small>
-                            </div>
-                        </div>
-                        <div class="amount negative">- $120.02</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-left">
-                            <div>
-                                <div>Brandon King</div><small>Received Money</small>
-                            </div>
-                        </div>
-                        <div class="amount positive">+ $250.00</div>
-                    </div>
+                    
                 </div>
             </div>
         </div>

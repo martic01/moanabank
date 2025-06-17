@@ -248,7 +248,7 @@ div:hover {
 
 }
 
-#Bankopt {
+.bankopt {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
@@ -419,15 +419,14 @@ form button:hover {
 }
 
 
-.amount {
-    font-weight: bold;
-}
 
-.negative {
+.red {
+    font-weight: bold;
     color: #e74c3c;
 }
 
-.positive {
+.green {
+     font-weight: bold;
     color: #2ecc71;
 }
 
@@ -645,20 +644,22 @@ form button:hover {
     transition: .3s;
     margin-top: 20px;
     background-color: #4d4bd6;
+    color: rgb(68, 66, 66);
     border: none;
     border-radius: 10px;
 }
 
 .btns {
-
     text-align: center;
     font-weight: 800;
     outline: none;
     cursor: pointer;
+    outline: none;
 }
 
 .btn:hover {
-    background-color: #2a28a1;
+    background-color: #000000;
+    color: white;
 }
 
 .casf .cancel {

@@ -1,14 +1,5 @@
 
-function loadpage() {
-    $(".loader").show()
-    $(".accountpage").fadeOut(2000)
-    setTimeout(() => {
-        $(".mybankpage").fadeIn(2000)
-        setTimeout(() => {
-            $(".loader").fadeOut()
-        }, 2000);
-    }, 7000);
-}
+
 function tostringed(inputed) {
     return inputed.toLocaleString()
 }
@@ -29,17 +20,18 @@ $(document).ready(function () {
         moneyClass.forEach((item, i) => {
             if (i === index) {
                 item === 'Withdraw' || item === 'Deposit' ?
-                    $('#Bankopt, .accountno').prop('disabled', true) :
-                    $('#Bankopt, .accountno').prop('disabled', false)
+                    $('.bankopt, .accountno').prop('disabled', true) :
+                    $('.bankopt, .accountno').prop('disabled', false)
 
                 $(".typejs").text(item)
                 $("#amount").addClass(`.${item.toLowerCase()}`)
                 if (item === moneyClass[0] || item === moneyClass[1]) {
+                    $(`#${account.id}.bankopt option:eq(0)`).prop('selected', true);
                     $(`#${account.id}.accountno`).val(account.accountnumber)
                 } else {
                     $(`#${account.id}.accountno`).val('')
                 }
-                $("#amount").prop('placeholder', `amount to ${item}`)
+                $(".amount").prop('placeholder', `amount to ${item}`)
                 clickedOn.addClass('acting')
             }
         })

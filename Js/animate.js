@@ -23,6 +23,17 @@ function dropWater(elm, item, classname, efft, obj1, obj2) {
 
 }
 
+function loadpage(time1,time2) {
+    $(".loader").show()
+    $(".accountpage").fadeOut(time2)
+    setTimeout(() => {
+        $(".mybankpage").fadeIn(time2)
+        setTimeout(() => {
+            $(".loader").fadeOut()
+        }, time2);
+    }, time1);
+}
+
 function blinkEye() {
     $('.eyelid').addClass('blinked');
     setTimeout(() => {
