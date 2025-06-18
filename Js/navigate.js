@@ -75,18 +75,6 @@ $(document).ready(function () {
         }
     })
 
-    $(".edit-icon").click(function () {
-        $(".done-icon").show()
-        $(".edit-icon").hide()
-    })
-
-    $(".done-icon").click(function () {
-        $(".edit-icon").show()
-        $(".done-icon").hide()
-    })
-
-
-
     $("#showSignup").click(function () {
         $("#signupForm").show()
         $("#loginForm").hide()

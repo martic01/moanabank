@@ -1,3 +1,6 @@
+let timeouted;
+let iserror = true;
+
 function containsLettersAndNumbers(password) {
     const letterRegex = /[a-zA-Z]/;
     const numberRegex = /[0-9]/;
@@ -13,7 +16,6 @@ function lenerror(active, numL, numH) {
 }
 
 
-let timeouted;
 
 function alerting(className, errorSpace, erroricon, icon, message) {
     $(className).find(errorSpace).text(message);
@@ -21,7 +23,7 @@ function alerting(className, errorSpace, erroricon, icon, message) {
     $(className).show();
     timeouted = setTimeout(function () {
         $(className).fadeOut();
-    },3000);
+    }, 3000);
 }
 function gmailerror(email) {
     const emailEnd = email.slice(-10)
@@ -31,8 +33,34 @@ function gmailerror(email) {
     }
     return true
 }
-let iserror = true;
+
+function checkEditName(input) {
+    if (lenerror(input, 3, 40)) {
+        alerting(".alerted", ".errormes", ".erroricon", "👀", "Username must be 3-40 characters");
+        return true
+    }
+    return false
+}
+function checkEditEmail(input) {
+    if (gmailerror(input)) {
+        alerting(".alerted", ".errormes", ".erroricon", "👀", "Email unaccepted | Email must contain @gmail.com");
+        return true
+    }
+    return false
+}
+
+function checkEditBirth(input) {
+    const age = calculateAge(input);
+    if (age < 16) {
+        alerting(".alerted", ".errormes", ".erroricon", "👀", "You must be at least 16 years old.");
+        return true
+    }
+    return false
+}
+
+
 $(document).ready(function () {
+
     $(".password").on("input", function () {
         const password = $(this).val().trim();
         const warn = $(this).closest('form').find('.warn');
@@ -80,4 +108,8 @@ $(document).ready(function () {
             iserror = true;
         }
     });
+
+
+
+
 });

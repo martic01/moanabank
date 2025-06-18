@@ -42,9 +42,6 @@ function bvnNumber() {
     return Math.floor(1000000000 + Math.random() * 9000000000)
 }
 
-Account.prototype.addTransaction = function () {
-
-};
 
 function calculateAge(birthDate) {
     const today = new Date();
@@ -67,7 +64,7 @@ const testAccounts = [
     new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
 ];
 
-function createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn) {
+function createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber) {
     // Check for empty fields
     [username, emailaddress, dateofbirth, nin, password].forEach(function (input) {
         if (!input) {
@@ -143,7 +140,6 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
             password,
             balance,
             accountnumber,
-            bvn
         );
 
 
@@ -161,7 +157,7 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
 
 function bindId(accountId) {
     const account = bank.findAccount(accountId);
-    $('.balance,.name,.birth,.emailed,.accountnum, .accountno,.nin,.bvn,.profile,.logout,.beye,.eyelid,.bankopt,.btnsmon,.amount,.history,.typejs').attr('id', account.id);
+    $('.balance,.name,.birth,.emailed,.accountnum,.accountnumd, .accountno,.nin,.bvn,.profile,.logout,.beye,.eyelid,.bankopt,.btnsmon,.amount,.history,.typejs,.edit,.done,.named').attr('id', account.id);
 }
 
 
@@ -180,16 +176,13 @@ function showAccount(accountId) {
                 })
         );
 
-    $(`#${account.id}.name`).each(function () {
-        if ($(this).is(`input, textarea, select`)) {
-            $(this).val(account.userName);
-        } else {
-            $(this).text(`Hello ${account.userName}`);
-        }
-    });
+
+    $(`#${account.id}.name`).val(account.userName);
+    $(`#${account.id}.named`).text(`Hello ${account.userName}`);
     $(`#${account.id}.birth`).val(account.dateOfBirth);
     $(`#${account.id}.emailed`).val(account.emailAddress);
     $(`#${account.id}.accountnum`).val(account.accountnumber);
+    $(`#${account.id}.accountnumd`).text(account.accountnumber);
     $(`#${account.id}.nin`).val(account.NIN);
     $(`#${account.id}.bvn`).val(account.BVN);
     displayTransactions(account.id)
@@ -287,7 +280,7 @@ function deposit(accountId, amount) {
     }
 }
 
-function transfer(accountId, amount, recipientAccountNumber) {
+function transfer(accountId, amount, recipientAccountNumber, bankname) {
     // 1. Validate amount format
     validateAmount(amount)
 
@@ -304,6 +297,11 @@ function transfer(accountId, amount, recipientAccountNumber) {
 
     if (!recipientAccount) {
         alerting(".alerted", ".errormes", ".erroricon", "⚠", "Recipient account not found");
+        return false;
+    }
+
+    if (recipientAccount.bankName !== bankname) {
+        alerting(".alerted", ".errormes", ".erroricon", "🏪❌", "Wrong Bank");
         return false;
     }
 
@@ -358,6 +356,7 @@ function attachEventListeners() {
         const state = $(`#${account.id}.typejs`).text().trim();
         let amountInput = $(`#${account.id}.amount`).val().trim();
         let accountInput = $(`#${account.id}.accountno`).val().trim();
+        let accountBankName = $(`#${account.id}.bankopt`).val();
 
         // Remove commas if present
         if (amountInput.includes(',')) {
@@ -371,7 +370,7 @@ function attachEventListeners() {
         } else if (state === 'Deposit' || state === 'Request') {
             deposit(account.id, numericAmount);
         } else if (state === 'Transfer') {
-            transfer(account.id, numericAmount, accountInput)
+            transfer(account.id, numericAmount, accountInput, accountBankName)
         }
 
         // Clear input
@@ -400,6 +399,90 @@ function attachEventListeners() {
             // Just hide the value - no need to store since we'll regenerate it
             $balanceInput.val('**********');
         }
+    });
+
+    // Edit Button Click Handler
+    $(`#${account.id}.edit`).off('click').on('click', function () {
+        const $editButton = $(this);
+        const $doneButton = $editButton.siblings('.done');
+        const index = $('.edit').index(this);
+        const fields = ['name', 'birth', 'emailed'];
+
+        fields.forEach((field, i) => {
+            const $field = $(`#${account.id}.${field}`);
+
+            // Convert birth field to date input when editing
+
+
+            if (i === index) {
+                $field.prop('readonly', false)
+                    .focus();
+                $doneButton.show();
+                $editButton.hide();
+            } else {
+                $field.prop('readonly', true);
+            }
+
+            if (field === fields[1] && i === index) {
+                $field.prop('readonly', false)
+                    .prop('type', 'date');
+            }
+        });
+
+        // Hide other edit buttons
+        $(`#${account.id}.edit`).not(this).hide();
+    });
+
+    // Done Button Click Handler
+    $(`#${account.id}.done`).off('click').on('click', function () {
+        const $doneButton = $(this);
+        const $editButton = $doneButton.siblings('.edit');
+        const input = $doneButton.siblings(`input`)
+        const index = $('.done').index(this);
+        // Get input fields
+        const $name = $(`#${account.id}.name`);
+        const $email = $(`#${account.id}.emailed`);
+        const $birth = $(`#${account.id}.birth`);
+
+
+        checkEditName($name.val())
+        checkEditBirth($birth.val())
+        checkEditEmail($email.val())
+
+        // Directly update the account object
+
+        switch (index) {
+            case 0: // Name
+                if (!checkEditName($name.val())) {
+                    account.userName = $name.val();
+                    $name.val(account.userName);
+                }
+                break;
+            case 1: // Email
+                if (!checkEditBirth($birth.val())) {
+                    $birth.prop('type', 'text');
+                    account.dateOfBirth = $birth.val().trim();
+                    $birth.val(account.dateOfBirth);
+                }
+                break;
+            case 2:
+                if (!checkEditEmail($email.val())) {
+                    account.emailAddress = $email.val().trim();
+                    $email.val(account.emailAddress);
+                }
+                break;
+        }
+
+        if (!checkEditName($name.val()) && !checkEditBirth($birth.val()) && !checkEditEmail($email.val())) {
+            input.prop('readonly', true);
+            $doneButton.hide();
+            $editButton.show();
+
+            // Show all edit buttons again
+            $(`#${account.id}.edit`).show();
+        }
+        console.log('Updated account:', account);
+
     });
 
 }

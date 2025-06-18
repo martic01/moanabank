@@ -335,7 +335,7 @@ form button:hover {
     background: linear-gradient(135deg, #4e00c2, #7d2ae8);
     color: white;
     border-radius: 15px;
-    padding: 17px;
+    padding: 10px;
 }
 
 .wallet-card h2 {
