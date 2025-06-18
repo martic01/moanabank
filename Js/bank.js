@@ -374,6 +374,18 @@ function displayTransactions(accountId) {
     })
 }
 
+function copy(accountId,wattocopy) {
+    const account = bank.findAccount(accountId)
+    let ToCopy = account[wattocopy]
+    let textToCopy = ToCopy;
+    let tempTextarea = $("<textarea>");
+    tempTextarea.val(textToCopy);
+    $("body").append(tempTextarea);
+    tempTextarea.select();
+    document.execCommand("copy");
+    $(tempTextarea).remove();
+    alerting(".alerted", ".errormes", ".erroricon", "🔍", "Account Copied to Clipboard");
+}
 
 function attachEventListeners() {
     const account = bank.findAccount(accountId);
@@ -523,15 +535,7 @@ function attachEventListeners() {
 
 
     $(`#${account.id}.copy`).off('click').on('click', function () {
-        let ToCopy = account.accountnumber
-        let textToCopy = ToCopy;
-        let tempTextarea = $("<textarea>");
-        tempTextarea.val(textToCopy);
-        $("body").append(tempTextarea);
-        tempTextarea.select();
-        document.execCommand("copy");
-        $(tempTextarea).remove();
-        alerting(".alerted", ".errormes", ".erroricon", "🔍", "Account Copied to Clipboard");
+        copy(accountId,'accountnumber')
     });
 
 };
