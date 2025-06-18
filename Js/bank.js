@@ -5,7 +5,7 @@ function Bank() {
 }
 
 Bank.prototype.AcctId = function () {
-    this.userId = generateAccountNumber();
+    this.userId = generateMixedId();
     return this.userId;
 }
 
@@ -34,7 +34,14 @@ function Account(username, emailaddress, dateofbirth, nin, password, balance, ac
     this.transactions = []
 }
 
-
+function generateMixedId(length = 10) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
 
 function generateAccountNumber() {
     return Math.floor(1000000000 + Math.random() * 9000000000)
@@ -458,7 +465,7 @@ function attachEventListeners() {
 
         // Hide other edit buttons
         $(`#${account.id}.edit`).not(this).hide();
-         $(`.logout`).hide();
+        $(`.logout`).hide();
     });
 
 
@@ -477,7 +484,7 @@ function attachEventListeners() {
         checkEditBirth($birth.val())
         checkEditEmail($email.val())
 
-          const duplicateField = checkDuplicate($name.val(), $email.val());
+        const duplicateField = checkDuplicate($name.val(), $email.val());
 
         if (duplicateField) {
             alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
@@ -496,8 +503,10 @@ function attachEventListeners() {
                     $birth.prop('type', 'text');
                     account.dateOfBirth = $birth.val().trim();
                     $birth.val(account.dateOfBirth);
+                } else {
+                    alerting(".alerted", ".errormes", ".erroricon", "⚠", `Fill in date`);
                 }
-                alerting(".alerted", ".errormes", ".erroricon", "⚠", `Fill in date`);
+
                 break;
             case 2:
                 if (!checkEditEmail($email.val())) {
@@ -539,15 +548,15 @@ function attachEventListeners() {
 
 let accountId = null;
 
-const testAccounts = [
-    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
-    new Account("bob", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
-];
+// const testAccounts = [
+//     new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
+//     new Account("bob", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
+// ];
 
 
-testAccounts.forEach(account => {
-    bank.AddAcount(account);
-});
+// testAccounts.forEach(account => {
+//     bank.AddAcount(account);
+// });
 
 
 
