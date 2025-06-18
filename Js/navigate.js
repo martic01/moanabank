@@ -47,12 +47,7 @@ $(document).ready(function () {
         $(".profile").removeClass('half')
     })
 
-    $(".logout").click(function () {
-        $(".accountpage").show()
-        $('.monbtn').removeClass('acting')
-        $(".profile").removeClass('half')
-        $(".out").hide()
-    })
+
 
     $(".profile").click(function () {
         $(".profile-info").slideToggle()
@@ -68,6 +63,13 @@ $(document).ready(function () {
         $('.tab-btn').removeClass('active')
         if (clicked.has('.active')) {
             clicked.toggleClass('active')
+        }
+        if (clicked.notHas('.active')) {
+            $('#username').val('');
+            $('#emailaddress').val('');
+            $('#dateofbirth').val('');
+            $('#nin').val('');
+            $('#password').val('');
         }
     })
 

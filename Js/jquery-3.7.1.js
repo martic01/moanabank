@@ -1015,6 +1015,9 @@ function createButtonPseudo( type ) {
 	};
 }
 
+jQuery.fn.notHas = function(selector) {
+    return this.find(selector).length === 0;
+};
 /**
  * Returns a function to use in pseudos for :enabled/:disabled
  * @param {Boolean} disabled true for :disabled; false for :enabled

@@ -54,8 +54,15 @@ $(document).ready(function () {
         const nin = $('#nin').val();
         const password = $('#password').val().trim();
         const balance = 0;
-        const accountnumber = generateAccountNumber();
+        const accountnumber = generateAccountNumber().toString();
         const bvn = bvnNumber();
+
+        const duplicateField = checkDuplicate(username, emailaddress);
+
+        if (duplicateField) {
+            alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
+            return;
+        }
         createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn);
         // Clear form
         if (!iserror) {
@@ -86,7 +93,16 @@ $(document).ready(function () {
             $('#loginpassword').val('');
 
         }
-     
+
 
     });
+
+      $(".logout").click(function () {
+        accountId = null
+        $(".accountpage").show()
+        $('.monbtn').removeClass('acting')
+        $(".profile").removeClass('half')
+        $(".out").hide()
+        iserror = true;
+    })
 });

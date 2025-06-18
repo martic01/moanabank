@@ -62,8 +62,32 @@ const bank = new Bank()
 
 const testAccounts = [
     new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
-    new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
+    new Account("bob", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
 ];
+
+
+function checkDuplicate(input1, input2) {
+    const account = bank.findAccount(accountId);
+
+    for (const id in bank.Accounts) {
+        if (bank.Accounts.hasOwnProperty(id)) {
+            const accountbank = bank.Accounts[id];
+
+            if (accountbank.id === account.id) continue;
+
+            if (accountbank.userName.toLowerCase() === input1.toLowerCase()) {
+                return "Username";
+            }
+
+            if (accountbank.emailAddress.toLowerCase() === input2.toLowerCase()) {
+                return "Email";
+            }
+        }
+    }
+
+    return ""; // No duplicates
+}
+
 
 function createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber) {
     // Check for empty fields
@@ -99,39 +123,9 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
             iserror = true;
         }
 
-
-        // Check for duplicates by looping through accounts object
         iserror = false;
-        let isDuplicate = false;
-        let duplicateField = "";
 
-        for (const accountnumber in bank.Accounts) {
-            if (bank.Accounts.hasOwnProperty(accountnumber)) {
-                const account = bank.Accounts[accountnumber];
-                if (account.userName.toLowerCase() === username.toLowerCase()) {
-                    isDuplicate = true;
-                    duplicateField = "Username";
-                    break;
-                }
-                if (account.emailAddress.toLowerCase() === emailaddress.toLowerCase()) {
-                    isDuplicate = true;
-                    duplicateField = "Email";
-                    break;
-                }
 
-                if (account.NIN === nin) {
-                    isDuplicate = true;
-                    duplicateField = "NIN";
-                    break;
-                }
-
-            }
-        }
-
-        if (isDuplicate) {
-            alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
-            return;
-        }
 
         const newAccount = new Account(
             username,
@@ -374,7 +368,7 @@ function displayTransactions(accountId) {
     })
 }
 
-function copy(accountId,wattocopy) {
+function copy(accountId, wattocopy) {
     const account = bank.findAccount(accountId)
     let ToCopy = account[wattocopy]
     let textToCopy = ToCopy;
@@ -446,6 +440,7 @@ function attachEventListeners() {
         const index = $('.edit').index(this);
         const fields = ['name', 'birth', 'emailed'];
 
+
         fields.forEach((field, i) => {
             const $field = $(`#${account.id}.${field}`);
 
@@ -469,9 +464,11 @@ function attachEventListeners() {
 
         // Hide other edit buttons
         $(`#${account.id}.edit`).not(this).hide();
+         $(`.logout`).hide();
     });
 
-    // Done Button Click Handler
+
+
     $(`#${account.id}.done`).off('click').on('click', function () {
         const $doneButton = $(this);
         const $editButton = $doneButton.siblings('.edit');
@@ -482,12 +479,16 @@ function attachEventListeners() {
         const $email = $(`#${account.id}.emailed`);
         const $birth = $(`#${account.id}.birth`);
 
-
         checkEditName($name.val())
         checkEditBirth($birth.val())
         checkEditEmail($email.val())
 
-        // Directly update the account object
+          const duplicateField = checkDuplicate($name.val(), $email.val());
+
+        if (duplicateField) {
+            alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
+            return;
+        }
 
         switch (index) {
             case 0: // Name
@@ -497,11 +498,12 @@ function attachEventListeners() {
                 }
                 break;
             case 1: // Email
-                if (!checkEditBirth($birth.val())) {
+                if (!checkEditBirth($birth.val()) && $birth.val()) {
                     $birth.prop('type', 'text');
                     account.dateOfBirth = $birth.val().trim();
                     $birth.val(account.dateOfBirth);
                 }
+                alerting(".alerted", ".errormes", ".erroricon", "⚠", `Fill in date`);
                 break;
             case 2:
                 if (!checkEditEmail($email.val())) {
@@ -511,21 +513,20 @@ function attachEventListeners() {
                 break;
         }
 
-        if (!checkEditName($name.val()) && !checkEditBirth($birth.val()) && !checkEditEmail($email.val())) {
+        if (!checkEditName($name.val()) && !checkEditBirth($birth.val()) && $birth.val() && !checkEditEmail($email.val())) {
             input.prop('readonly', true);
             $doneButton.hide();
             $editButton.show();
 
             // Show all edit buttons again
             $(`#${account.id}.edit`).show();
+            $(`.logout`).show();
         }
 
     });
 
 
     $(`#${account.id}.his`).off('click').on('click', function () {
-        console.log('in');
-
         if (account.transactions.length > 0) {
             $(".history").slideToggle()
         } else if (account.transactions.length <= 0) {
@@ -535,7 +536,7 @@ function attachEventListeners() {
 
 
     $(`#${account.id}.copy`).off('click').on('click', function () {
-        copy(accountId,'accountnumber')
+        copy(accountId, 'accountnumber')
     });
 
 };
