@@ -1,6 +1,7 @@
 function Bank() {
     this.Accounts = {}
     this.userId;
+    this.cashBack = 0.19
 }
 
 Bank.prototype.AcctId = function () {
@@ -60,7 +61,7 @@ const bank = new Bank()
 
 
 const testAccounts = [
-    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 400000, '2000000001', "33445566778"),
+    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
     new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
 ];
 
@@ -157,7 +158,7 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
 
 function bindId(accountId) {
     const account = bank.findAccount(accountId);
-    $('.balance,.name,.birth,.emailed,.accountnum,.accountnumd, .accountno,.nin,.bvn,.profile,.logout,.beye,.eyelid,.bankopt,.btnsmon,.amount,.history,.typejs,.edit,.done,.named').attr('id', account.id);
+    $('.balance,.name,.birth,.emailed,.accountnum,.accountnumd, .accountno,.nin,.bvn,.profile,.logout,.beye,.eyelid,.bankopt,.btnsmon,.amount,.history,.his,.typejs,.edit,.done,.named,.copy').attr('id', account.id);
 }
 
 
@@ -166,6 +167,8 @@ function showAccount(accountId) {
     if (!account) {
         return;
     }
+
+
 
     $(`#${account.id}.balance`)
         .val(
@@ -187,6 +190,13 @@ function showAccount(accountId) {
     $(`#${account.id}.bvn`).val(account.BVN);
     displayTransactions(account.id)
     attachEventListeners()
+
+    const pupil = $(`#${account.id}.beye`).find('.pubdy');
+    if (account.balance <= 200) {
+        pupil.addClass('errorpupil');
+    } else if (account.balance >= 200) {
+        pupil.removeClass('errorpupil');
+    }
 }
 
 function numericAmounts(amount) {
@@ -245,9 +255,9 @@ function withdraw(accountId, amount) {
         return;
     }
 
-    if (validateAmount(amount) && numericAmount < balance) {
+    if (validateAmount(amount) && numericAmount <= balance) {
         const newBalance = balance - numericAmount;
-        account.balance = newBalance;
+        account.balance = newBalance + bank.cashBack;
 
         account.transactions.push(
             htmltransaction(account.userName, 'Debit', 'red', '-', numericAmount)
@@ -255,8 +265,14 @@ function withdraw(accountId, amount) {
 
         showAccount(accountId);
         loadpage(300, 10);
+        clearTimeout(timeouted)
         alerting(".alerted", ".errormes", ".erroricon", "✅",
             `Withdrawal of $${numericAmount.toLocaleString()} successful!`);
+        setTimeout(() => {
+            clearTimeout(timeouted)
+            alerting(".alerted", ".errormes", ".erroricon", "🤝", `Cashback of $${bank.cashBack} recevied 🤗`);
+        }, 2400);
+
     }
 }
 
@@ -268,14 +284,19 @@ function deposit(accountId, amount) {
 
     if (validateAmount(amount)) {
         const newBalance = balance + numericAmount;
-        account.balance = newBalance;
+        account.balance = newBalance + bank.cashBack;
 
         account.transactions.push(
             htmltransaction(account.userName, 'Credit', 'green', '+', numericAmount)
         );
         showAccount(accountId);
         loadpage(300, 10);
+        clearTimeout(timeouted)
         alerting(".alerted", ".errormes", ".erroricon", "✅", `Deposite of $${numericAmount.toLocaleString()} successful!`);
+        setTimeout(() => {
+            clearTimeout(timeouted)
+            alerting(".alerted", ".errormes", ".erroricon", "🤝", `Cashback of $${bank.cashBack} recevied 🤗`);
+        }, 2400);
 
     }
 }
@@ -318,7 +339,7 @@ function transfer(accountId, amount, recipientAccountNumber, bankname) {
 
     // 5. PROCESS TRANSFER
     // Update balances
-    senderAccount.balance = (Number(senderAccount.balance) - numericAmount).toFixed(2);
+    senderAccount.balance = (Number(senderAccount.balance) - numericAmount + bank.cashBack).toFixed(2);
     recipientAccount.balance = (Number(recipientAccount.balance) + numericAmount).toFixed(2);
 
     // Record transactions
@@ -330,13 +351,18 @@ function transfer(accountId, amount, recipientAccountNumber, bankname) {
     );
 
     recipientAccount.transactions.push(
-        htmltransaction(recipientNote, 'Deposit', 'green', '+', numericAmount)
+        htmltransaction(recipientNote, 'Receive', 'green', '+', numericAmount)
     );
 
     // 6. Update UI
-    showAccount(accountId); // Refresh sender view
+    showAccount(accountId);
+    clearTimeout(timeouted)// Refresh sender view
     alerting(".alerted", ".errormes", ".erroricon", "✅",
         `Transferred $${numericAmount.toLocaleString()} to ${recipientAccount.userName}`);
+    setTimeout(() => {
+        clearTimeout(timeouted)
+        alerting(".alerted", ".errormes", ".erroricon", "🤝", `Cashback of $${bank.cashBack} recevied 🤗`);
+    }, 2400);
     return true;
 }
 
@@ -371,11 +397,11 @@ function attachEventListeners() {
             deposit(account.id, numericAmount);
         } else if (state === 'Transfer') {
             transfer(account.id, numericAmount, accountInput, accountBankName)
+            $(`#${account.id}.accountno`).val('')
         }
 
         // Clear input
         $(`#${account.id}.amount`).val('');
-        $(`#${account.id}.accountno`).val('')
     });
 
     $(`#${account.id}.beye`).off('click').on('click', function () {
@@ -485,17 +511,32 @@ function attachEventListeners() {
     });
 
 
-
     $(`#${account.id}.his`).off('click').on('click', function () {
+        console.log('in');
+
         if (account.transactions.length > 0) {
             $(".history").slideToggle()
-        } else {
+        } else if (account.transactions.length <= 0) {
             alerting(".alerted", ".errormes", ".erroricon", "⬛", "History is empty make some transactions");
         }
     })
 
 
+    $(`#${account.id}.copy`).off('click').on('click', function () {
+        let ToCopy = account.accountnumber
+        let textToCopy = ToCopy;
+        let tempTextarea = $("<textarea>");
+        tempTextarea.val(textToCopy);
+        $("body").append(tempTextarea);
+        tempTextarea.select();
+        document.execCommand("copy");
+        $(tempTextarea).remove();
+        alerting(".alerted", ".errormes", ".erroricon", "🔍", "Account Copied to Clipboard");
+    });
+
 };
+
+
 
 let accountId = null;
 

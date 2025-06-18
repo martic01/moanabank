@@ -74,7 +74,7 @@ $(document).ready(function () {
                 alerting(".alerted", ".errormes", ".erroricon", "❌", "Password must contain both letters and numbers.");
                 eyelid.addClass('erroreye');
                 pupil.addClass('errorpupil');
-                warn.removeClass('atrong');
+                warn.removeClass('strong');
             } else if (lenerror(password, 5, 8)) {
                 eyelid.addClass('erroreye');
                 pupil.addClass('errorpupil');
