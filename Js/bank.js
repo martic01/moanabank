@@ -481,9 +481,19 @@ function attachEventListeners() {
             // Show all edit buttons again
             $(`#${account.id}.edit`).show();
         }
-        console.log('Updated account:', account);
 
     });
+
+
+
+    $(`#${account.id}.his`).off('click').on('click', function () {
+        if (account.transactions.length > 0) {
+            $(".history").slideToggle()
+        } else {
+            alerting(".alerted", ".errormes", ".erroricon", "⬛", "History is empty make some transactions");
+        }
+    })
+
 
 };
 

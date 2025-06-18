@@ -5,10 +5,6 @@ function tostringed(inputed) {
 }
 
 $(document).ready(function () {
-    $(".his").click(function () {
-        $(".history").slideToggle()
-    })
-
     $(".monbtn").click(function () {
         const account = bank.findAccount(accountId)
         const index = $('.monbtn').index(this)
