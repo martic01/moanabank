@@ -19,17 +19,17 @@ $(document).ready(function () {
         $("#amount").removeClass()
         moneyClass.forEach((item, i) => {
             if (i === index) {
-                item === 'Withdraw' || item === 'Deposit' ?
-                    $('.bankopt, .accountno').prop('disabled', true) :
-                    $('.bankopt, .accountno').prop('disabled', false)
+
 
                 $(".typejs").text(item)
                 $("#amount").addClass(`.${item.toLowerCase()}`)
-                if (item === moneyClass[0] || item === moneyClass[1]) {
+                if (item === moneyClass[0] || item === moneyClass[1] || item === moneyClass[2]) {
                     $(`#${account.id}.bankopt option:eq(0)`).prop('selected', true);
                     $(`#${account.id}.accountno`).val(account.accountnumber)
+                    $('.bankopt, .accountno').prop('disabled', true)
                 } else {
                     $(`#${account.id}.accountno`).val('')
+                    $('.bankopt, .accountno').prop('disabled', false)
                 }
                 $(".amount").prop('placeholder', `amount to ${item}`)
                 clickedOn.addClass('acting')
@@ -109,29 +109,6 @@ $(document).ready(function () {
         inputOf.prop('type', currentType === 'password' ? 'text' : 'password')
 
     })
-    $('.beye').click(function () {
-        const $balanceInput = $(this).siblings('.balance');
-        const $eyelid = $(this).find('.eyelid');
-        const isOpening = !$eyelid.hasClass('opendeye');
-
-        $eyelid.toggleClass('opendeye');
-
-        if (isOpening) {
-            // Opening eye - show formatted balance with 2 decimals
-            const numericValue = parseFloat($balanceInput.data('original-value')) || parseFloat($balanceInput.val().replace(/,/g, ''));
-            $balanceInput.val(parseFloat(numericValue.toFixed(2)).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }));
-        } else {
-            // Closing eye - store numeric value and show asterisks
-            const currentValue = $balanceInput.val();
-            $balanceInput.data('original-value',
-                parseFloat(currentValue.replace(/,/g, '')) || parseFloat($balanceInput.val())
-            );
-            $balanceInput.val('*'.repeat(10));
-        }
-    });
 
     $("form").submit(function (e) {
         e.preventDefault()

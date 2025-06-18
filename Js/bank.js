@@ -24,12 +24,13 @@ function Account(username, emailaddress, dateofbirth, nin, password, balance, ac
     this.userName = username;
     this.emailAddress = emailaddress;
     this.dateOfBirth = dateofbirth;
-    this.NIN = nin
+    this.NIN = nin;
     this.password = password;
     this.balance = balance;
-    this.accountnumber = accountnumber
+    this.accountnumber = accountnumber;
+    this.BVN = bvnNumber()
+    this.bankName = 'Fɭo₩Ca$h';
     this.transactions = []
-    this.BVN = bvn || generateAccountNumber(); // Generate a random BVN if not provided
 }
 
 
@@ -62,8 +63,8 @@ const bank = new Bank()
 
 
 const testAccounts = [
-    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 400000, 2000000001, "33445566778"),
-    new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, 2000000002, "33445566778") // BVN will auto-generate
+    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 400000, '2000000001', "33445566778"),
+    new Account("Bob Johnson", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
 ];
 
 function createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn) {
@@ -160,27 +161,11 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
 
 function bindId(accountId) {
     const account = bank.findAccount(accountId);
-    $('.balance').attr('id', account.id);
-    $('.name').attr('id', account.id);
-    $('.birth').attr('id', account.id)
-    $('.emailed').attr('id', account.id)
-    $('.accountnum, .accountno').attr('id', account.id)
-    $('.nin').attr('id', account.id)
-    $('.bvn').attr('id', account.id)
-    $('.profile').attr('id', account.id);
-    $('.logout').attr('id', account.id);
-    $('.beye').attr('id', account.id);
-    $('.bankopt').attr('id', account.id);
-    $('.btnsmon').attr('id', account.id);
-    $('.amount').attr('id', account.id);
-    $('.history').attr('id', account.id);
-    $('.typejs').attr('id', account.id);
+    $('.balance,.name,.birth,.emailed,.accountnum, .accountno,.nin,.bvn,.profile,.logout,.beye,.eyelid,.bankopt,.btnsmon,.amount,.history,.typejs').attr('id', account.id);
 }
 
 
 function showAccount(accountId) {
-    bindId(accountId);
-
     const account = bank.findAccount(accountId);
     if (!account) {
         return;
@@ -204,10 +189,10 @@ function showAccount(accountId) {
     });
     $(`#${account.id}.birth`).val(account.dateOfBirth);
     $(`#${account.id}.emailed`).val(account.emailAddress);
-    $(`#${account.id}.accountnum, #${account.id}.accountno`).val(account.accountnumber);
+    $(`#${account.id}.accountnum`).val(account.accountnumber);
     $(`#${account.id}.nin`).val(account.NIN);
     $(`#${account.id}.bvn`).val(account.BVN);
-
+    displayTransactions(account.id)
     attachEventListeners()
 }
 
@@ -221,7 +206,7 @@ function numericAmounts(amount) {
     return numericAmount
 }
 
-function validateAmount(accountId, amount) {
+function validateAmount(amount) {
     let numericAmount = numericAmounts(amount)
     // Validate the amount
     if (isNaN(numericAmount)) {
@@ -229,13 +214,7 @@ function validateAmount(accountId, amount) {
         return;
     }
 
-    const account = bank.findAccount(accountId);
-    const balance = Number(account.balance);
-
-    if (numericAmount > balance) {
-        alerting(".alerted", ".errormes", ".erroricon", "🙄", "Insufficient funds.");
-        return;
-    } else if (numericAmount <= 200) {
+    if (numericAmount <= 200) {
         alerting(".alerted", ".errormes", ".erroricon", "🤨", "Amount must be greater than $200.");
         return;
     } else if (numericAmount > 300000) {
@@ -263,12 +242,17 @@ function htmltransaction(info1, action, actionclass, sign, amount) {
 }
 
 function withdraw(accountId, amount) {
-    validateAmount(accountId, amount)
+    validateAmount(amount)
     let numericAmount = numericAmounts(amount)
     const account = bank.findAccount(accountId);
     const balance = Number(account.balance);
 
-    if (validateAmount(accountId, amount)) {
+    if (numericAmount > balance) {
+        alerting(".alerted", ".errormes", ".erroricon", "🙄", "Insufficient funds.");
+        return;
+    }
+
+    if (validateAmount(amount) && numericAmount < balance) {
         const newBalance = balance - numericAmount;
         account.balance = newBalance;
 
@@ -284,12 +268,12 @@ function withdraw(accountId, amount) {
 }
 
 function deposit(accountId, amount) {
-    validateAmount(accountId, amount)
+    validateAmount(amount)
     let numericAmount = numericAmounts(amount)
     const account = bank.findAccount(accountId);
     const balance = Number(account.balance);
 
-    if (validateAmount(accountId, amount)) {
+    if (validateAmount(amount)) {
         const newBalance = balance + numericAmount;
         account.balance = newBalance;
 
@@ -302,19 +286,78 @@ function deposit(accountId, amount) {
 
     }
 }
+
+function transfer(accountId, amount, recipientAccountNumber) {
+    // 1. Validate amount format
+    validateAmount(amount)
+
+    const numericAmount = numericAmounts(amount);
+    const senderAccount = bank.findAccount(accountId);
+    // 3. Validate recipient account exists and isn't sender
+    let recipientAccount = null;
+    for (const accountId in bank.Accounts) {
+        if (bank.Accounts[accountId].accountnumber === recipientAccountNumber) {
+            recipientAccount = bank.Accounts[accountId];
+            break;
+        }
+    }
+
+    if (!recipientAccount) {
+        alerting(".alerted", ".errormes", ".erroricon", "⚠", "Recipient account not found");
+        return false;
+    }
+
+    if (recipientAccount.accountnumber === senderAccount.accountnumber) {
+        alerting(".alerted", ".errormes", ".erroricon", "🙅", "Cannot transfer to yourself");
+        return false;
+    }
+
+    // 4. Check sufficient balance
+    if (Number(senderAccount.balance) < numericAmount) {
+        alerting(".alerted", ".errormes", ".erroricon", "🙄", "Insufficient funds");
+        return false;
+    }
+
+    // 5. PROCESS TRANSFER
+    // Update balances
+    senderAccount.balance = (Number(senderAccount.balance) - numericAmount).toFixed(2);
+    recipientAccount.balance = (Number(recipientAccount.balance) + numericAmount).toFixed(2);
+
+    // Record transactions
+    const senderNote = `Transfer to ${recipientAccount.userName}`;
+    const recipientNote = `Received from ${senderAccount.userName}`;
+
+    senderAccount.transactions.push(
+        htmltransaction(senderNote, 'Transfer', 'red', '-', numericAmount)
+    );
+
+    recipientAccount.transactions.push(
+        htmltransaction(recipientNote, 'Deposit', 'green', '+', numericAmount)
+    );
+
+    // 6. Update UI
+    showAccount(accountId); // Refresh sender view
+    alerting(".alerted", ".errormes", ".erroricon", "✅",
+        `Transferred $${numericAmount.toLocaleString()} to ${recipientAccount.userName}`);
+    return true;
+}
+
 function displayTransactions(accountId) {
     const account = bank.findAccount(accountId)
+    $('.trans').empty()
     account.transactions.forEach(function (trans) {
-        
+        $('.trans').prepend(trans)
     })
-    
 }
+
+
 function attachEventListeners() {
     const account = bank.findAccount(accountId);
-
     $(`#${account.id}.btnsmon`).off('click').on('click', function () {
+
         const state = $(`#${account.id}.typejs`).text().trim();
         let amountInput = $(`#${account.id}.amount`).val().trim();
+        let accountInput = $(`#${account.id}.accountno`).val().trim();
 
         // Remove commas if present
         if (amountInput.includes(',')) {
@@ -325,95 +368,49 @@ function attachEventListeners() {
 
         if (state === 'Withdraw') {
             withdraw(account.id, numericAmount);
-        } else if (state === 'Deposit') {
+        } else if (state === 'Deposit' || state === 'Request') {
             deposit(account.id, numericAmount);
+        } else if (state === 'Transfer') {
+            transfer(account.id, numericAmount, accountInput)
         }
 
         // Clear input
         $(`#${account.id}.amount`).val('');
+        $(`#${account.id}.accountno`).val('')
     });
+
+    $(`#${account.id}.beye`).off('click').on('click', function () {
+        const account = bank.findAccount(accountId);
+        const $balanceInput = $(this).siblings('.balance');
+        const $eyelid = $(this).find('.eyelid');
+        const isOpening = !$eyelid.hasClass('opendeye');
+
+        $eyelid.toggleClass('opendeye');
+
+        if (isOpening) {
+            // Restore the properly formatted value
+
+            $balanceInput.val(
+                parseFloat(account.balance).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })
+            );
+        } else {
+            // Just hide the value - no need to store since we'll regenerate it
+            $balanceInput.val('**********');
+        }
+    });
+
 }
+
+let accountId = null;
+
 testAccounts.forEach(account => {
     bank.AddAcount(account);
 });
-let accountId = null;
-$(document).ready(function () {
-
-    function displayAccount() {
-        const loginemailaddress = $('#loginemailaddress').val();
-        const loginPassword = $('#loginpassword').val();
-
-        // Check for empty fields
-        if (!loginemailaddress || !loginPassword) {
-            alerting(".alerted", ".errormes", ".erroricon", "⚠", "Please fill in all fields.");
-            return;
-        }
-
-        let foundAccount = null;
-
-
-        if (!gmailerror(loginemailaddress)) {
-            // Loop through all accounts to find matching email
-            for (const id in bank.Accounts) {
-                const account = bank.findAccount(id); // Using your existing method
-                if (account && account.emailAddress.toLowerCase() === loginemailaddress.toLowerCase()) {
-                    foundAccount = account;
-                    accountId = id; // Store the account ID
-                    break;
-                }
-            }
-
-
-            if (!foundAccount) {
-                alerting(".alerted", ".errormes", ".erroricon", "⭕", "Account Does not Exist");
-                return;
-            }
-            if (foundAccount.password !== loginPassword) {
-                alerting(".alerted", ".errormes", ".erroricon", "❌", "Incorrect password.");
-                return;
-            }
-
-            alerting(".alerted", ".errormes", ".erroricon", "👍", "Login successful!");
-            setTimeout(() => {
-                loadpage(7000, 2000)
-                showAccount(accountId);
-            }, 1000);
-        }
-    }
 
 
 
 
-    $('#signupforms').submit(function () {
-        const username = $('#username').val().trim();
-        const emailaddress = $('#emailaddress').val();
-        const dateofbirth = $('#dateofbirth').val();
-        const nin = $('#nin').val();
-        const password = $('#password').val().trim();
-        const balance = 0;
-        const accountnumber = generateAccountNumber();
-        const bvn = bvnNumber();
-        createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn);
-        // Clear form
-        if (!iserror) {
-            $('#username').val('');
-            $('#emailaddress').val('');
-            $('#dateofbirth').val('');
-            $('#nin').val('');
-            $('#password').val('');
-        }
 
-    });
-
-    $('#loginforms').submit(function () {
-
-        displayAccount()
-        // console.log("Login successful. Account:", {
-        //     id: accountId,          // The account ID (key in bank.Accounts)
-        //     ...foundAccount          // All other account properties
-        // });
-
-        // Successful login
-
-    });
-});
