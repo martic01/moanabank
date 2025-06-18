@@ -398,7 +398,7 @@ function attachEventListeners() {
         } else {
             // Just hide the value - no need to store since we'll regenerate it
             $balanceInput.val('**********');
-        }
+        };
     });
 
     // Edit Button Click Handler
