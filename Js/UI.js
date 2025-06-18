@@ -33,7 +33,9 @@ $(document).ready(function () {
                 alerting(".alerted", ".errormes", ".erroricon", "❌", "Incorrect password.");
                 return;
             }
-
+            
+            $('#loginemailaddress').val('');
+            $('#loginpassword').val('');
             alerting(".alerted", ".errormes", ".erroricon", "👍", "Login successful!");
             setTimeout(() => {
                 loadpage(7000, 2000)
@@ -80,24 +82,10 @@ $(document).ready(function () {
 
 
     $('#loginforms').submit(function () {
-        let eye = $(this).find('.eyes')
         displayAccount()
-        if (!iserror) {
-            if (eye.has('.opendeye')) {
-                eye.trigger('click')
-            }
-            if (eye.has('.opendeye')) {
-                eye.trigger('click')
-            }
-            $('#loginemailaddress').val('');
-            $('#loginpassword').val('');
-
-        }
-
-
     });
 
-      $(".logout").click(function () {
+    $(".logout").click(function () {
         accountId = null
         $(".accountpage").show()
         $('.monbtn').removeClass('acting')

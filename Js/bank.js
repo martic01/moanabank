@@ -60,12 +60,6 @@ function calculateAge(birthDate) {
 const bank = new Bank()
 
 
-const testAccounts = [
-    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
-    new Account("bob", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
-];
-
-
 function checkDuplicate(input1, input2) {
     const account = bank.findAccount(accountId);
 
@@ -544,6 +538,12 @@ function attachEventListeners() {
 
 
 let accountId = null;
+
+const testAccounts = [
+    new Account("Alice Smith", "alice@gmail.com", "12/08/1990", "98765432109", "lice1", 0, '2000000001', "33445566778"),
+    new Account("bob", "bob@gmail.com", "03/11/1982", "45612378903", "bob4", 7500, '2000000002', "33445566778") // BVN will auto-generate
+];
+
 
 testAccounts.forEach(account => {
     bank.AddAcount(account);
