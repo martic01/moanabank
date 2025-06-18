@@ -485,7 +485,7 @@ function attachEventListeners() {
 
     });
 
-}
+};
 
 let accountId = null;
 
