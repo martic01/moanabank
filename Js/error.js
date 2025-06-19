@@ -15,6 +15,14 @@ function lenerror(active, numL, numH) {
     return false
 }
 
+function isAlphabetic(input) {
+    for (const char of input) {
+        if (!/[a-zA-Z]/.test(char)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 
 function alerting(className, errorSpace, erroricon, icon, message) {
@@ -25,29 +33,47 @@ function alerting(className, errorSpace, erroricon, icon, message) {
         $(className).fadeOut();
     }, 3000);
 }
+
 function gmailerror(email) {
-    const emailEnd = email.slice(-10)
-    const emailEndinput = '@gmail.com';
-    if (emailEnd.match(emailEndinput)) {
-        return false
+    const requiredEnd = "@gmail.com";
+    const symbolRegex = /[!#$%^&*(),?":{}|<>]/;
+
+    if (!email.endsWith(requiredEnd)) {
+        return `Email must end with ${requiredEnd}`;
     }
-    return true
+
+    const firstChar = email.charAt(0);
+    if (!/[a-zA-Z]/.test(firstChar)) {
+        return "First character must be a letter";
+    }
+
+    if (symbolRegex.test(email)) {
+        return "Email must not contain symbols (!#$%^&*, etc.)";
+    }
+
+    const username = email.slice(0, -10);
+    if (!/^[a-zA-Z0-9.]+$/.test(username)) {
+        return "Email can only contain letters, numbers, and dots (.) before @gmail.com";
+    }
+
+    const len = lenerror(email, 13, 24);
+    if (len) {
+        return "Email must be between 13 to 24 characters long";
+    }
+
+    return "";
 }
 
 function checkEditName(input) {
+    if (!/^[a-zA-Z]+(?: [a-zA-Z]+)*$/.test(input)) {
+        return "Username can only contain letters and single spaces between words";
+    }
     if (lenerror(input, 3, 40)) {
-        alerting(".alerted", ".errormes", ".erroricon", "👀", "Username must be 3-40 characters");
-        return true
+        return "Username must be 3-40 characters";
     }
-    return false
+    return "";
 }
-function checkEditEmail(input) {
-    if (gmailerror(input)) {
-        alerting(".alerted", ".errormes", ".erroricon", "👀", "Email unaccepted | Email must contain @gmail.com");
-        return true
-    }
-    return false
-}
+
 
 function checkEditBirth(input) {
     const age = calculateAge(input);
@@ -95,18 +121,26 @@ $(document).ready(function () {
         e.preventDefault();
         const password = $(this).find('.password').val().trim();
         const email = $(this).find('.email').val().trim();
+        const emailError = gmailerror(email)
+
+        if (!containsLettersAndNumbers(password) || lenerror(password, 5, 8) || emailError || emailError) {
+            iserror = true;
+        }
+
         if (!containsLettersAndNumbers(password)) {
             alerting(".alerted", ".errormes", ".erroricon", "❌", "Password must contain both letters and numbers.");
+            return;
         }
         if (lenerror(password, 5, 8)) {
             alerting(".alerted", ".errormes", ".erroricon", "👀", "Password length is invalid | Password must be between 5 to 8 characters long");
+            return;
         }
-        if (gmailerror(email)) {
-            alerting(".alerted", ".errormes", ".erroricon", "👀", "Email unaccepted | Email must contain @gmail.com");
+
+        if (emailError) {
+            alerting(".alerted", ".errormes", ".erroricon", "👀", `Email unaccepted | ${emailError}`);
+            return;
         }
-        if (!containsLettersAndNumbers(password) || lenerror(password, 5, 8) || gmailerror(email)) {
-            iserror = true;
-        }
+
     });
 
 

@@ -77,10 +77,12 @@ function checkDuplicate(input1, input2) {
             if (accountbank.id === account.id) continue;
 
             if (accountbank.userName.toLowerCase() === input1.toLowerCase()) {
+                iserror = true
                 return "Username";
             }
 
             if (accountbank.emailAddress.toLowerCase() === input2.toLowerCase()) {
+                iserror = true
                 return "Email";
             }
         }
@@ -100,8 +102,9 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
         }
     });
 
+    const emailError = gmailerror(emailaddress)
     if (username && emailaddress && dateofbirth && nin && password &&
-        containsLettersAndNumbers(password) && !gmailerror(emailaddress)) {
+        containsLettersAndNumbers(password) && !emailError) {
 
         const age = calculateAge(dateofbirth);
         if (age < 16) {
@@ -120,7 +123,11 @@ function createAccount(username, emailaddress, dateofbirth, nin, password, balan
             alerting(".alerted", ".errormes", ".erroricon", "👀", "Username must be 3-40 characters");
             return;
         }
-        if (age < 16 || lenerror(password, 5, 8) || lenerror(nin, 11, 11) || lenerror(username, 3, 40)) {
+        if (lenerror(emailaddress, 13, 24)) {
+            alerting(".alerted", ".errormes", ".erroricon", "👀", "Email length is invalid | Email must be between 13 to 24 characters long");
+            return;
+        }
+        if (age < 16 || lenerror(password, 5, 8) || lenerror(nin, 11, 11) || lenerror(username, 3, 40) || lenerror(emailaddress, 13, 24)) {
             iserror = true;
         }
 
@@ -480,10 +487,12 @@ function attachEventListeners() {
         const $email = $(`#${account.id}.emailed`);
         const $birth = $(`#${account.id}.birth`);
 
-        checkEditName($name.val())
-        checkEditBirth($birth.val())
-        checkEditEmail($email.val())
+    
 
+        checkEditBirth($birth.val())
+
+         const checkEditUserName = checkEditName(username)
+        const emailError = gmailerror($email.val())
         const duplicateField = checkDuplicate($name.val(), $email.val());
 
         if (duplicateField) {
@@ -493,7 +502,7 @@ function attachEventListeners() {
 
         switch (index) {
             case 0: // Name
-                if (!checkEditName($name.val())) {
+                if (!checkEditUserName) {
                     account.userName = $name.val();
                     $name.val(account.userName);
                 }
@@ -509,14 +518,16 @@ function attachEventListeners() {
 
                 break;
             case 2:
-                if (!checkEditEmail($email.val())) {
+                if (!emailError) {
                     account.emailAddress = $email.val().trim();
                     $email.val(account.emailAddress);
+                }else{
+                     alerting(".alerted", ".errormes", ".erroricon", "⚠", `${emailError}`);
                 }
                 break;
         }
 
-        if (!checkEditName($name.val()) && !checkEditBirth($birth.val()) && $birth.val() && !checkEditEmail($email.val())) {
+        if (!checkEditName($name.val()) && !checkEditBirth($birth.val()) && $birth.val() && !emailError) {
             input.prop('readonly', true);
             $doneButton.hide();
             $editButton.show();

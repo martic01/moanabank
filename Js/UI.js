@@ -33,7 +33,7 @@ $(document).ready(function () {
                 alerting(".alerted", ".errormes", ".erroricon", "❌", "Incorrect password.");
                 return;
             }
-            
+
             $('#loginemailaddress').val('');
             $('#loginpassword').val('');
             alerting(".alerted", ".errormes", ".erroricon", "👍", "Login successful!");
@@ -59,12 +59,17 @@ $(document).ready(function () {
         const accountnumber = generateAccountNumber().toString();
         const bvn = bvnNumber();
 
+        const checkEditUserName = checkEditName(username)
+        if (checkEditUserName) {
+            alerting(".alerted", ".errormes", ".erroricon", "🔠", `${checkEditUserName}`);
+            return;
+        }
         const duplicateField = checkDuplicate(username, emailaddress);
-
         if (duplicateField) {
             alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
             return;
         }
+
         createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn);
         // Clear form
         if (!iserror) {
