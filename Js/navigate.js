@@ -60,6 +60,7 @@ $(document).ready(function () {
     })
     $('.tab-btn').click(function () {
         const clicked = $(this)
+        const warn = $('.warn');
         $('.tab-btn').removeClass('active')
         if (clicked.has('.active')) {
             clicked.toggleClass('active')
@@ -70,6 +71,7 @@ $(document).ready(function () {
             $('#dateofbirth').val('');
             $('#nin').val('');
             $('#password').val('');
+            warn.removeClass('strong');
         }
     })
 

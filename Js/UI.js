@@ -57,25 +57,15 @@ $(document).ready(function () {
         const password = $('#password').val().trim();
         const balance = 0;
         const accountnumber = generateAccountNumber().toString();
-        const bvn = bvnNumber();
+        const warn = $('.warn');
 
-        const checkEditUserName = checkEditName(username)
-        if (checkEditUserName) {
-            alerting(".alerted", ".errormes", ".erroricon", "🔠", `${checkEditUserName}`);
-            return;
-        }
-        const duplicateField = checkDuplicate(username, emailaddress);
-        if (duplicateField) {
-            alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
-            return;
-        }
-
-        createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber, bvn);
+        createAccount(username, emailaddress, dateofbirth, nin, password, balance, accountnumber);
         // Clear form
         if (!iserror) {
             if (eye.has('.opendeye')) {
                 eye.trigger('click')
             }
+            warn.removeClass('strong');
             $('#username').val('');
             $('#emailaddress').val('');
             $('#dateofbirth').val('');

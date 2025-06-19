@@ -1,11 +1,7 @@
 let timeouted;
 let iserror = true;
 
-function containsLettersAndNumbers(password) {
-    const letterRegex = /[a-zA-Z]/;
-    const numberRegex = /[0-9]/;
-    return letterRegex.test(password) && numberRegex.test(password);
-}
+
 function lenerror(active, numL, numH) {
     const low = active.length < numL
     const high = active.length > numH
@@ -13,15 +9,6 @@ function lenerror(active, numL, numH) {
         return true
     }
     return false
-}
-
-function isAlphabetic(input) {
-    for (const char of input) {
-        if (!/[a-zA-Z]/.test(char)) {
-            return false;
-        }
-    }
-    return true;
 }
 
 
@@ -32,6 +19,19 @@ function alerting(className, errorSpace, erroricon, icon, message) {
     timeouted = setTimeout(function () {
         $(className).fadeOut();
     }, 3000);
+}
+
+function passwordError(password) {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+
+    if (!hasLetter || !hasNumber) {
+        return "Password must contain both letters and numbers";
+    }
+    if (lenerror(password, 5, 8)) {
+        return "Password must be 5-8 characters"
+    }
+    return "";
 }
 
 function gmailerror(email) {
@@ -58,7 +58,7 @@ function gmailerror(email) {
 
     const len = lenerror(email, 13, 24);
     if (len) {
-        return "Email must be between 13 to 24 characters long";
+        return "Email must be 13-24 characters";
     }
 
     return "";
@@ -66,7 +66,7 @@ function gmailerror(email) {
 
 function checkEditName(input) {
     if (!/^[a-zA-Z]+(?: [a-zA-Z]+)*$/.test(input)) {
-        return "Username can only contain letters and single spaces between words";
+        return "Username can only contain letters.";
     }
     if (lenerror(input, 3, 40)) {
         return "Username must be 3-40 characters";
@@ -92,16 +92,12 @@ $(document).ready(function () {
         const warn = $(this).closest('form').find('.warn');
         const eyelid = $(this).siblings('.eye').find('.eyelid');
         const pupil = $(this).siblings('.eye').find('.pubdy');
+        const passwordErrorCheck = passwordError(password)
         if (!password) {
             eyelid.removeClass('erroreye');
             pupil.removeClass('errorpupil');
         } else {
-            if (!containsLettersAndNumbers(password) && password.length > 4) {
-                alerting(".alerted", ".errormes", ".erroricon", "❌", "Password must contain both letters and numbers.");
-                eyelid.addClass('erroreye');
-                pupil.addClass('errorpupil');
-                warn.removeClass('strong');
-            } else if (lenerror(password, 5, 8)) {
+            if (passwordErrorCheck) {
                 eyelid.addClass('erroreye');
                 pupil.addClass('errorpupil');
                 warn.removeClass('strong');
@@ -122,28 +118,20 @@ $(document).ready(function () {
         const password = $(this).find('.password').val().trim();
         const email = $(this).find('.email').val().trim();
         const emailError = gmailerror(email)
-
-        if (!containsLettersAndNumbers(password) || lenerror(password, 5, 8) || emailError || emailError) {
+        const passwordErrorCheck = passwordError(password)
+       
+        if (passwordErrorCheck || emailError) {
             iserror = true;
         }
-
-        if (!containsLettersAndNumbers(password)) {
-            alerting(".alerted", ".errormes", ".erroricon", "❌", "Password must contain both letters and numbers.");
-            return;
-        }
-        if (lenerror(password, 5, 8)) {
-            alerting(".alerted", ".errormes", ".erroricon", "👀", "Password length is invalid | Password must be between 5 to 8 characters long");
-            return;
-        }
-
         if (emailError) {
-            alerting(".alerted", ".errormes", ".erroricon", "👀", `Email unaccepted | ${emailError}`);
+            alerting(".alerted", ".errormes", ".erroricon", "👀", `Invalid Email | ${emailError}`);
+            return;
+        }
+        if (passwordErrorCheck) {
+            alerting(".alerted", ".errormes", ".erroricon", "👀", `${passwordErrorCheck}`);
             return;
         }
 
+       
     });
-
-
-
-
 });
