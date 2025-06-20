@@ -30,7 +30,7 @@ function passwordError(password) {
     }
     if (lenerror(password, 5, 8)) {
         return "Password must be 5-8 characters"
-    }
+    };
     return "";
 }
 
