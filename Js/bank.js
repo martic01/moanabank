@@ -110,7 +110,7 @@ function validateAlert(username, emailaddress, dateofbirth, nin, password) {
         return;
     }
     if (emailError) {
-        alerting(".alerted", ".errormes", ".erroricon", "👀", `Invalid Email | ${emailError}`);
+        alerting(".alerted", ".errormes", ".erroricon", "👀", `Invalid Email |  <span class="warning">${emailError}</span>`);
         return;
     }
     if (age < 16) {
@@ -127,7 +127,7 @@ function validateAlert(username, emailaddress, dateofbirth, nin, password) {
     }
 
     if (duplicateField) {
-        alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
+        alerting(".alerted", ".errormes", ".erroricon", "⚠", ` <span class="warning">${duplicateField}</span> already exists`);
         return;
     }
 }
@@ -515,7 +515,7 @@ function attachEventListeners() {
         const duplicateField = checkDuplicate($name.val(), $email.val());
 
         if (duplicateField) {
-            alerting(".alerted", ".errormes", ".erroricon", "⚠", `${duplicateField} already exists`);
+            alerting(".alerted", ".errormes", ".erroricon", "⚠", ` <span class="warning">${duplicateField}</span> already exists`);
             return;
         }
 

@@ -67,21 +67,17 @@ function gmailerror(email) {
 function checkEditName(input) {
     // !/^[a-zA-Z]+(?: [a-zA-Z]+)+$/.test(input)
     if (!/^[a-zA-Z]+ [a-zA-Z]+$/.test(input)) {
-        return "Only First name and Last name is required | <span class='black'>Name can only be letters</span>";
+        return "Only First name and Last name is required | <span class='warning'>Name can only be letters</span>";
     }
 
     const [firstName, lastName] = input.split(' ');
 
     if (lenerror(firstName, 3, 20)) {
-        return "First name must be 2-20 characters";
+        return "First name must be 3-20 characters";
     }
 
     if (lenerror(lastName, 3, 20)) {
-        return "Last name must be 2-20 characters";
-    }
-
-    if (lenerror(input, 3, 40)) {
-        return "Full name must be 3-40 characters";
+        return "Last name must be 3-20 characters";
     }
 
     return "";
@@ -136,7 +132,7 @@ $(document).ready(function () {
             iserror = true;
         }
         if (emailError) {
-            alerting(".alerted", ".errormes", ".erroricon", "👀", `Invalid Email | ${emailError}`);
+            alerting(".alerted", ".errormes", ".erroricon", "👀", `Invalid Email | <span class="warning">${emailError}</span>`);
             return;
         }
         if (passwordErrorCheck) {
