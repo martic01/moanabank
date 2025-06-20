@@ -65,6 +65,7 @@ function gmailerror(email) {
 }
 
 function checkEditName(input) {
+    // !/^[a-zA-Z]+(?: [a-zA-Z]+)+$/.test(input)
     if (!/^[a-zA-Z]+ [a-zA-Z]+$/.test(input)) {
         return "Only First name and Last name is required | <span class='black'>Name can only be letters</span>";
     }
