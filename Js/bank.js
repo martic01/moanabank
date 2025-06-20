@@ -185,12 +185,11 @@ function bindId(accountId) {
 
 
 function showAccount(accountId) {
+
     const account = bank.findAccount(accountId);
     if (!account) {
         return;
     }
-
-
 
     $(`#${account.id}.balance`)
         .val(

@@ -13,7 +13,7 @@ function lenerror(active, numL, numH) {
 
 
 function alerting(className, errorSpace, erroricon, icon, message) {
-    $(className).find(errorSpace).text(message);
+    $(className).find(errorSpace).html(message);
     $(className).find(erroricon).text(icon);
     $(className).show();
     timeouted = setTimeout(function () {
@@ -65,15 +65,26 @@ function gmailerror(email) {
 }
 
 function checkEditName(input) {
-    if (!/^[a-zA-Z]+(?: [a-zA-Z]+)*$/.test(input)) {
-        return "Username can only contain letters.";
+    if (!/^[a-zA-Z]+ [a-zA-Z]+$/.test(input)) {
+        return "Only First name and Last name is required | <span class='black'>Name can only be letters</span>";
     }
+
+    const [firstName, lastName] = input.split(' ');
+
+    if (lenerror(firstName, 3, 20)) {
+        return "First name must be 2-20 characters";
+    }
+
+    if (lenerror(lastName, 3, 20)) {
+        return "Last name must be 2-20 characters";
+    }
+
     if (lenerror(input, 3, 40)) {
-        return "Username must be 3-40 characters";
+        return "Full name must be 3-40 characters";
     }
+
     return "";
 }
-
 
 function checkEditBirth(input) {
     const age = calculateAge(input);
